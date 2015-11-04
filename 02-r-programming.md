@@ -48,3 +48,67 @@ https://www.coursera.org/course/rprog
 * `names(v) <- c('a', 'b', 'c')` to define on vector
 * `list(a=1, b=2)`
 * `dimnames(m) <- list(c('row1', 'row2'), c('col1', 'col2'))` on matrix
+
+## Reading data
+
+```r
+# tabular data
+read.table  # sep=" "
+write.table
+read.csv    # sep=",", header=T
+
+read.table(
+  file='',
+  header=T,
+  sep=',',
+  colClasses=c("numeric", "numeric"), # faster than inferring from data
+  stringsAsFactors=T,
+  nrows=100,
+  comment.char = "",  # faster without comments
+)
+
+# optimization: set colClasses
+small <- read.table("db.txt", nrows=100)
+classes <- sapply(small, class) # classes from a small set
+read.table("db.txt", colClasses = classes)
+
+# text file
+readLines / writeLines
+
+# R files
+source / dget / dput
+
+# workspace
+load
+
+# marshaling objects
+unserialize / save, serialize
+
+# Connections
+con <- file("foo.txt", "r")
+gzfile
+bzfile
+url
+
+# alternative to reading by path
+data <- read.csv(con)
+close(con)
+```
+
+## Subsetting
+
+```r
+x <- c("a", "b", "c", "c", "d", "a")
+
+# extracts the same type as the original object
+x[1]       # "a" subset by numeric index
+x[1:4]     # "a" "b" "c" "c" subset by range
+x[x > "a"] # "b" "c" "c" "d" subset by conditional
+u < x > "a"
+x[u]       # same as above, subset by logicals
+
+
+# extracts element, but not the same type
+
+# extract named element, not necessarily of the same type
+```
