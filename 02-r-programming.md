@@ -108,7 +108,188 @@ u < x > "a"
 x[u]       # same as above, subset by logicals
 
 
-# extracts element, but not the same type
+# extracts element, but not the same type, only selects one element
+y <- list(foo = 1:5)
+z <- "foo"
+x[[z]] # returns vector
 
-# extract named element, not necessarily of the same type
+# $ will try to match named var
+y <- list(aardvark = 1:5)
+y$a  # returns 1:5
+
+# matrices will drop dimension by default with [ operator
+m <- matrix(1:6, nrow=2, ncol=3)
+m[1,1]  # returns row 1, col 1, value 1, but is numeric, not matrix
+m[2,2, drop = F]  # returns a matrix
+m[1,]   # returns sequence, the first row
+
+# remove NA's by subsetting vector of where NA's are positioned
+x <- c(1, 2, NA, 4, NA, 5)
+bad <- is.na(x)
+x[!bad]
+
+# subset out dataframe missing values
+good <- complete.cases(data)
+data[good,]
+```
+
+## Vectorized operations
+
+* operators are aware of vectors. `+` will operate pairwise. `>` will compare against each element
+* avoids writing your own loops
+* matrix multiplication is `%*%`, `*` is just element by element multiplication
+
+## Control structures
+
+* apply functions are more useful in repl. These are for scripts.
+
+```r
+if(expression) {
+
+} else if {
+
+} else {
+
+}
+
+for(i in 1:10) { }
+for(i in array_seq(x)) { }
+
+while(expression) { }
+
+# infinite loop, useful for iterating until convergence, but can use other
+# structures to bound the number of iterations.
+repeat {
+  break  # force end
+
+  next  # skip iteration
+  return  # exit the calling function
+}
+```
+
+## Functions
+
+* functions are first class objects
+* args are lazily evaluated
+
+```r
+add2 <- function(x, y) {
+  x + y  # implicit return
+}
+
+# subset elements from vector x greater than n
+above <- function(x, n = 10) {  # default value
+  use <- x > 10
+  x[use]
+}
+
+columnmean <- function(y, removeNA = TRUE) {  # named argument
+  num_cols <- ncol(y)
+  means <- numeric(num_cols)  # initialize empty numeric vector
+  for(i in 1:num_cols) {
+    means[i] <- mean(y[,i], na.rm = removeNA)
+  }
+  means
+}
+
+formals(columnmean)  # list of args for a function
+
+foo <- function(x, y, z, garply = FALSE, bar = 3)
+
+# args can be positional or named, mix and match is ok
+foo(1, 2, 3, TRUE, 4)
+foo(y = 2, x = 1, 3, TRUE, 4)
+
+# args can be partially matched by name
+foo(1, 2, 3, gar = TRUE, b = 5)
+
+# args are lazily evaluated
+f <- function(a, b) {
+  print(a)  # this will print 45
+  print(b)  # this will error when it's used
+}
+f(45)
+
+# ... argument. also useful for generic functions for dispatch
+myplot <- function(x, y, type = "l", ...) {
+  plot(x, y, type = type, ...)
+}
+
+# ... argument: variable number of arguments. Remaining args must be named,
+# and can't be partially matched
+> args(cat)
+function(..., sep = " ", collapse = NULL)
+```
+
+## Symbol binding
+
+* search global environment (workspace, first in the search list)
+* search the namespaces of each package in the search list. `search()` prints list
+* `base` package is the last in the search list.
+* separate namespaces for functions and non-functions. Can have object `c` and function `c`.
+* loading a library inserts in search list after global env.
+* lexical scoping: the values of free variables are searched for in the environment in which the function was defined.
+  * environment: collection of (symbol, value) pairs
+  * environments have parents, except the empty environment
+  * function + environment is a *closure* or *function closure*
+* dynamic scoping: the value of free variables are searched for in the calling environment (R: parent frame).
+
+```r
+f <- function(x, y) {
+  # x, y are not free variables because they're args
+  x^2 + y / z  # z is a "free variable"
+}
+
+make.power <- function(n) {
+  pow <- function(x) { x^n }
+  pow
+}
+
+cube <- make.power(3)
+square <- make.power(2)
+
+ls(environment(cube))
+[1] "n" "pow"
+get("n", environment(cube))
+[1] 3
+
+# takes a function, and tweaks parameters to estimate for optimum for a function
+# don't understand this yet
+optim
+nlm
+optimize
+```
+
+## Styleguide
+
+* indent 8 spaces???, 4 minimum
+* 80 columns
+
+## Dates and times
+
+* `Date` class
+* Times in `POSIXct`, `POSIXlt` classes
+* Dates are stored as days since 1970-01-01
+* Times are stored as seconds since 1970-01-01
+* tracks dst, leap years/seconds
+* plotting functions are date time aware
+
+```r
+x <- as.Date("1970-01-01")
+x
+## [1] "1970-01-01"  # pretty printed
+unclass(x)
+## [1] 0
+
+# POSIXct is a large number. the default
+# POSIXlt is a list with information: day or week, day of year, month, day of month
+x <- Sys.time()
+p <- as.POSIXlt(x)
+names(unclass(p))
+p$sec
+
+# format string to parse custom format
+x <- strptime("January 10, 2012 10:40", "%B %d, %Y %H:%M")
+
+# can't mix the two types. have to convert before operators
 ```
