@@ -40,6 +40,7 @@ https://www.coursera.org/course/rprog
 * `row.names`
 * usually create with `read.table`, `read.csv`
 * `data.frame(foo = 1:4, bar = c(T,T,F,F))`
+* `mtcars` built in dataframe, so cool!
 
 ## Names
 
