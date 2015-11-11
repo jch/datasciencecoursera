@@ -1,5 +1,5 @@
 complete <- function(directory, id = 1:332) {
-  totals <- c()
+  nobs <- c()
   ## 'directory' is a character vector of length 1 indicating
   ## the location of the CSV files
 
@@ -9,7 +9,7 @@ complete <- function(directory, id = 1:332) {
     path <- sprintf("%s/%03d.csv", directory, monitor_id)
 
     df <- read.csv(path, header = TRUE, comment.char = "")
-    totals <- c(totals, sum(complete.cases(df)))
+    nobs <- c(nobs, sum(complete.cases(df)))
   }
 
   ## Return a data frame of the form:
@@ -19,5 +19,5 @@ complete <- function(directory, id = 1:332) {
   ## ...
   ## where 'id' is the monitor ID number and 'nobs' is the
   ## number of complete cases
-  data.frame(id, totals)
+  data.frame(id, nobs)
 }
