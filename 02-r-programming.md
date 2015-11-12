@@ -1,6 +1,7 @@
 # R Programming
 
 https://www.coursera.org/course/rprog
+http://adv-r.had.co.nz/Computing-on-the-language.html
 
 * dialect of S, from bell labs in the 70's. open sourced in 93
 * bioconductor.org biological data analysis
@@ -293,4 +294,41 @@ p$sec
 x <- strptime("January 10, 2012 10:40", "%B %d, %Y %H:%M")
 
 # can't mix the two types. have to convert before operators
+```
+
+## Loop functions
+
+```r
+x <- list(a = 1:5, b = rnorm(10))  # rnorm 10 random numbs
+lapply(x, mean)  # always returns a list
+
+lapply(1:4, runif)  # runif(n) n random uniform
+lapply(1:4, runif, min = 0, max = 10)  # args to func
+
+lapply(x, function(elt) elt[,1])  # anonymous function for first column
+
+# simplify
+sapply(x, mean)  # flattens results into a vector
+
+apply(x, margin, func, ...)
+x <- matrix(rnorm(200), 20, 10)
+apply(x, 2, mean)  # mean of columns (collapse the 1st dimension)
+apply(x, 1, mean)  # mean of rows (collapse the 2nd dimension)
+
+# optimized versions of above
+rowSums
+rowMeans
+colSums
+colMeans
+
+# the 25th and 75th quantiles of each row
+apply(x, 1, quantile, probs = c(0.25, 0.75))
+
+# create an array of 2x2 matrices stacked 10 high
+a <- array(rnorms(2 * 2 * 10), c(2, 2, 10))
+
+# preserve the 1st and 2nd dimensions (2x2 matrix), then take the mean across
+# the 3rd collapsed dimension. Result dimension is also 2x2.
+apply(a, c(1,2), mean)
+rowMeans(a, dims = 2)  # optimized version
 ```
